@@ -19,7 +19,7 @@ __mtime__ = '2017/5/10'
                ┃┫┫ ┃┫┫
                ┗┻┛ ┗┻┛
 """
-from flask_sqlalchemy import SQLAlchemy
+from flask_sqlalchemy import *
 from flask import Flask
 import os
 
@@ -42,16 +42,16 @@ class Role(db.Model):
     name = db.Column(db.String(64), unique=True)
 
     # add property 'role' for class 'User'
-    users = db.relationship('User', backref='role')
+    users = db.relationship('User', backref='role', lazy='dynamic')
 
     def __repr__(self):
-        return '<Role %>' % self.name
+        return '<Role %s>' % self.name
 
 
 class User(db.Model):
     __tablename__ = 'users'
     id = db.Column(db.Integer, primary_key=True)
-    username = db.Column(db.String(64), unique=True, index=True)
+    username = db.Column(db.String(64), index=True)
 
     role_id = db.Column(db.Integer, db.ForeignKey('roles.id'))
 
@@ -59,12 +59,16 @@ class User(db.Model):
         return '<User %r>' % self.username
 
 
-db.create_all()
+class ClipBoard:
+    # db.create_all()
 
-admin_role = Role(name='rAdmin')
-mod_role = Role(name='rModerator')
-user_role = Role(name='rUser')
+    admin_role = Role(name='rAdmin')
+    mod_role = Role(name='rModerator')
+    user_role = Role(name='rUser')
 
-user_john = User(username='John', role=admin_role)
-user_susan = User(username='Susan', role=mod_role)
-user_david = User(username='David', role=user_role)
+    user_john = User(username='John', role=admin_role)
+    user_susan = User(username='Susan', role=mod_role)
+    user_susan2 = User(username='Susan', role=user_role)
+    user_david = User(username='David', role=user_role)
+
+    # db.session.add_all([admin_role, mod_role, user_role, user_david, user_susan, user_john])
